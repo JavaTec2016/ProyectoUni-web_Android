@@ -34,6 +34,8 @@ public class FieldWrapper {
     public String id;
     //agregar por separao
     public TextView label;
+    public String labelText;
+
     public LinkedHashMap<String, View> ui = new LinkedHashMap<>();
 
     public ConstraintLayout container;
@@ -59,7 +61,8 @@ public class FieldWrapper {
         requestLayout();
     }
     public void setLabelText(String txt){
-        label.setText(txt);
+        labelText = txt;
+        label.setText(labelText);
     }
     private LinearLayout.LayoutParams makeLinearParams(){
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -292,7 +295,7 @@ public class FieldWrapper {
      * @return formato de fecha limpio
      */
     private String limpiarFecha(String y, String m, String d){
-        StringBuilder b = new StringBuilder();
+        StringBuilder b = new StringBuilder("");
         if(!y.isEmpty()) b.append(y);
         if(!m.isEmpty()) b.append("-").append(m).append("-");
         if(!d.isEmpty()) {
@@ -326,7 +329,7 @@ public class FieldWrapper {
 
                 return limpiarFecha(y, m, d);
         }
-        return null;
+        return "";
     }
 
     /**

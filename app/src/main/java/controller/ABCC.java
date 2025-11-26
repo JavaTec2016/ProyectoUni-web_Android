@@ -92,12 +92,7 @@ public class ABCC {
 
         try{
 
-            boolean status = elobjeto.getBoolean("status");
-            if(!status){
-                return parser.toHashMap(elobjeto.getJSONObject("validation"));
-            }else{
-                return null;
-            }
+            return parser.toHashMap(elobjeto.getJSONObject("validation"));
 
         }catch (Exception e){ throw e; }
     }

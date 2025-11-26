@@ -1,6 +1,7 @@
 package com.example.proyestoandroid.formulario;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -54,7 +55,20 @@ public class FormWrapper {
         addField(id, f);
         return f;
     }
-
+    public void markLabelError(String fieldId, String error){
+        FieldWrapper fld = ui.get(fieldId);
+        TextView txt = fld.label;
+        txt.setTextColor(Color.RED);
+        String err = fld.labelText+"("+error+")";
+        txt.setText(err);
+    }
+    public void clearLabelError(String fieldId){
+        FieldWrapper fld = ui.get(fieldId);
+        TextView txt = fld.label;
+        txt.setTextColor(Color.BLACK);
+        String err = fld.labelText;
+        txt.setText(err);
+    }
     /**
      * Extrae los datos de todos los campos registrados en el formulario a un mapa
      * @return
@@ -74,6 +88,11 @@ public class FormWrapper {
     public void setFormData(LinkedHashMap<String, Object> datos){
         datos.forEach((id, value)->{
             Objects.requireNonNull(ui.get(id)).setValue(value);
+        });
+    }
+    public void clearForm(){
+        ui.forEach((id, field)->{
+            field.setValue("");
         });
     }
     public void onFieldsChange(FieldWrapper.FieldListener listener){

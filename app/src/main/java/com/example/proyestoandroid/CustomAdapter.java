@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.proyestoandroid.abcc.AbccActivity;
+
 import java.util.ArrayList;
 
 import model.Model;
@@ -16,9 +18,10 @@ import model.Model;
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder>{
 
     private ArrayList<Model> localDataset;
-
-    public CustomAdapter(ArrayList<Model> datos){
+    AbccActivity source;
+    public CustomAdapter(ArrayList<Model> datos, AbccActivity source){
         localDataset = datos;
+        this.source = source;
     }
     @NonNull
     @Override
@@ -33,7 +36,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
     public void onBindViewHolder(@NonNull CustomViewHolder holder, int position) {
         Model model = localDataset.get(position);
         Log.i("CUSTOMHOLDER", ""+position);
-        holder.bindModel(model);
+        holder.bindModel(model, source);
     }
     @Override
     public int getItemCount() {
@@ -56,7 +59,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
         public TextView getTextView() {
             return textView;
         }
-        public void bindModel(Model m){
+        public void bindModel(Model m, AbccActivity source){
             this.m = m;
             getTextView().setText(m.toString());
             Model proto = m.getProto();
@@ -64,16 +67,13 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
 
             ///bindear botones a callbacks
             btnDetalles.setOnClickListener(v -> {
-                Log.i("REGISTRO GG", "detalles de " +
-                        m.getName() + ": " + primaria);
+                source.detallesIntent(m);
             });
             btnEditar.setOnClickListener(v -> {
-                Log.i("REGISTRO GG", "edicion de " +
-                        m.getName() + ": " + primaria);
+                source.editarIntent(primaria, m);
             });
             btnEliminar.setOnClickListener(v -> {
-                Log.i("REGISTRO GG", "Baja de " +
-                        m.getName() + ": " + primaria);
+                source.eliminar(primaria);
             });
         }
     }

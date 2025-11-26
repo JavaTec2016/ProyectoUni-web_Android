@@ -1,5 +1,7 @@
 package com.example.proyestoandroid.abcc;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +22,7 @@ import com.example.proyestoandroid.R;
 import com.example.proyestoandroid.formulario.FieldAdapterItem;
 import com.example.proyestoandroid.formulario.FieldWrapper;
 import com.example.proyestoandroid.formulario.FormWrapper;
+import com.example.proyestoandroid.formulario.MensajesError;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -34,9 +37,10 @@ public class AbccActivity extends AppCompatActivity {
     RecyclerView.LayoutManager layoutManager;
     ArrayList<Model> registros;
     FormWrapper form;
-
+    MensajesError errores = null;
     protected boolean enConsulta = false;
     protected String tabla = null;
+    protected Model seleccion = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,22 +58,56 @@ public class AbccActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getBaseContext());
         recyclerView.setLayoutManager(layoutManager);
+
+        errores = new MensajesError();
+        setMensajesError();
     }
     public void setRegistros(ArrayList<Model> mds){
         registros.clear();
         registros.addAll(mds);
     }
     public void setRecycler(ArrayList<Model> mds){
+        AbccActivity hook = this;
         setRegistros(mds);
         registros.forEach(reg->{
             String k = reg.getProto().proto_getCampoPrimario();
             Log.i("Model", k + " => " + reg.read(k));
         });
         runOnUiThread(() -> {
-            adapter = new CustomAdapter(registros);
+            adapter = new CustomAdapter(registros, hook);
             recyclerView.setAdapter(adapter);
         });
-
+    }
+    public void displayValidacion(LinkedHashMap<String, Object> validacion){
+        if(validacion==null) {
+            showAgregarSuccess();
+            return;
+        }
+        validacion.forEach((id, codigo)->{
+            int numCodigo = Integer.parseInt(String.valueOf(codigo));
+            if(numCodigo == MensajesError.OK) { form.clearLabelError(id); }
+            else if(numCodigo == MensajesError.NULL_DATA){form.markLabelError(id, "*Campo requerido");}
+            else form.markLabelError(id, errores.getMensaje(numCodigo));
+        });
+    }
+    public void showAgregarSuccess(){
+        showToast("Registro agregado", Toast.LENGTH_SHORT);
+    }
+    public void showEliminarFail(){
+        showToast("Este registro no se puede eliminar", Toast.LENGTH_SHORT);
+    }
+    public void agregar(View v){
+        LinkedHashMap<String, Object> datos = form.getFormData();
+        ABCC proto = new ABCC(this);
+        new Thread(()->{
+            try {
+                LinkedHashMap<String, Object> validacion = proto.makeAlta(tabla, datos);
+                displayValidacion(validacion);
+            } catch (Exception e) {
+                showToast("Error de conexion, revise el intenet", Toast.LENGTH_LONG);
+                Log.i("ABCC_alta", "Error: ", e);
+            }
+        }).start();
     }
     public void makeConsultaForm(){
         if(enConsulta) return;
@@ -88,6 +126,9 @@ public class AbccActivity extends AppCompatActivity {
             enConsulta = false;
         }).start();
     }
+    public void limpiarForm(View v){
+        form.clearForm();
+    }
     protected void enableAutoSearch(){
         form.onFieldsChange((wrapper, fieldId) -> {
             makeConsultaForm();
@@ -95,9 +136,43 @@ public class AbccActivity extends AppCompatActivity {
         });
     }
     public boolean getEnConsulta(){return enConsulta;}
-
+    public void setMensajesError(){}
     public void showToast(String text, int length){
         AbccActivity hook = this;
         runOnUiThread(() -> Toast.makeText(hook, text, length).show());
+    }
+
+    public void eliminar(String id){
+        ABCC proto = new ABCC(this);
+
+        new Thread(()->{
+            try {
+                Log.i("REGISTRO GG2", "BAJA de" + id);
+                boolean b = proto.makeBaja(tabla, Integer.parseInt(id));
+                if(!b) showToast("No se pudo eliminar el registro", Toast.LENGTH_LONG);
+                else showToast("Registro eliminado", Toast.LENGTH_SHORT);
+
+                makeConsultaForm();
+            } catch (Exception e) {
+                showEliminarFail();
+                //throw new RuntimeException(e);
+            }
+        }).start();
+
+    }
+    public void editarIntent(String id, Model selectedModel){
+        Intent i = new Intent(this, null);
+        Log.i("REGISTRO GG2", "Edicion de" + id);
+        i.putExtra("OLD_id", id);
+        selectedModel.getDataMap().forEach((key, val)->{
+            i.putExtra(key, String.valueOf(val));
+        });
+    }
+    public void detallesIntent(Model model){
+        Intent i = new Intent(this, null);
+        Log.i("REGISTRO GG2", "Detalles de modelo");
+        model.getDataMap().forEach((key, val)->{
+            i.putExtra(key, String.valueOf(val));
+        });
     }
 }
