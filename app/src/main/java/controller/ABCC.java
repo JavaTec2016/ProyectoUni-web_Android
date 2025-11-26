@@ -19,6 +19,7 @@ public class ABCC {
     public static final String URLAltas = "http://10.0.2.2:80/proyesto/backend/API/api_mysql_altas.php";
     public static final String URLBajas = "http://10.0.2.2:80/proyesto/backend/API/api_mysql_bajas.php";
     public static final String URLCambios = "http://10.0.2.2:80/proyesto/backend/API/api_mysql_cambios.php";
+    public static final String URLLogin = "http://10.0.2.2:80/proyesto/backend/API/api_login.php";
 
     public static final String WIFI_OFF = "Wi-Fi inactivo";
     public static final String NO_INTERNET = "Error de conexion";
@@ -148,5 +149,14 @@ public class ABCC {
             return elobjeto.getBoolean("status");
 
         }catch (Exception e){ throw e; }
+    }
+    public String getLogin(LinkedHashMap<String, Object> auth) throws Exception {
+        prepareConnection();
+        String method = "GET";
+
+        JSONObject elobjeto = parser.request(URLLogin, method, auth);
+        if(elobjeto.getBoolean("status")){
+            return elobjeto.getString("rol");
+        }else return null;
     }
 }
