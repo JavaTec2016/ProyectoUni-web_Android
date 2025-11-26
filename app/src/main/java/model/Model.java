@@ -2,6 +2,8 @@ package model;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,7 +17,7 @@ public class Model {
     protected LinkedHashMap<String, DataRow> rules = new LinkedHashMap<>();
 
     public String getName(){
-        return this.getClass().getSimpleName();
+        return this.getClass().getSimpleName().toLowerCase();
     }
     protected Model(){};
     public Model(LinkedHashMap<String, Object> datos){
@@ -140,5 +142,11 @@ public class Model {
         ruleMap.forEach((ruleNombre, ruleData)->{
             addRule(ruleNombre, new DataRow(ruleData));
         });
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

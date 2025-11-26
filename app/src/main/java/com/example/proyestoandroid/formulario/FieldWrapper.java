@@ -22,7 +22,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.proyestoandroid.R;
 
+import java.util.Calendar;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 public class FieldWrapper {
     public static final int SIZE_AUTO = -5;
@@ -223,6 +225,13 @@ public class FieldWrapper {
         et.setAdapter(adapter);
         return et;
     }
+    public void setOptionsAsSpinner(FieldAdapterItem[] options){
+        if(options == null){
+            options = new FieldAdapterItem[]{new FieldAdapterItem("", "Seleccionar...")};
+        }
+        ArrayAdapter<FieldAdapterItem> adapter = new ArrayAdapter<>(getCtx(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, options);
+        ((Spinner) Objects.requireNonNull(ui.get("spinner"), "Nulombo")).setAdapter(adapter);
+    }
     public void setTextHint(String hint){
         switch (type.toLowerCase()){
             case "text":
@@ -265,7 +274,34 @@ public class FieldWrapper {
     public void setValueAsSpinner(String v, String key){
         setValueAsSpinner(ui.get(v), key);
     }
+    private String rellenarDecimal(String d, boolean izquierda){
+        StringBuilder b = new StringBuilder(d);
+        for(int i = d.length(); i < 2; i++){
+            if(izquierda) b.insert(0, "0");
+            else b.append("0");
+        }
+        return b.toString();
+    }
 
+    /**
+     * limpia un formato de fecha si contiene datos vacios.
+     * Ejemplo: 2025-(vacio)-2 -> 2025-%-2, o 2025-(vacio)-(vacio) -> 2025
+     * @param y cadena con el año
+     * @param m cadena con el numero del mes (1 al 12)
+     * @param d cadena con el dia
+     * @return formato de fecha limpio
+     */
+    private String limpiarFecha(String y, String m, String d){
+        StringBuilder b = new StringBuilder();
+        if(!y.isEmpty()) b.append(y);
+        if(!m.isEmpty()) b.append("-").append(m).append("-");
+        if(!d.isEmpty()) {
+            //mes wildcard, falla si no es consulta
+            if(m.isEmpty()) b.append("-%-");
+            b.append(d);
+        }
+        return b.toString();
+    }
     /**
      * Extrae el valor de los campos segun el tipo de input
      * @return
@@ -278,16 +314,17 @@ public class FieldWrapper {
             case "decimal":
                 String integer = getValueAsEditText("integer");
                 String decimal = getValueAsEditText("decimal");
+                decimal = rellenarDecimal(decimal, true);
+                if(integer.isEmpty()) integer = "0";
                 return integer + "." + decimal;
             case "spinner":
                 return getValueAsSpinner("spinner");
             case "date":
-                String[] data = {
-                        getValueAsEditText("date_y"),
-                        getValueAsSpinner("date_m"),
-                        getValueAsEditText("date_d")
-                };
-                return String.join("-", data);
+                String y = getValueAsEditText("date_y");
+                String m = getValueAsSpinner("date_m");
+                String d = getValueAsEditText("date_d");
+
+                return limpiarFecha(y, m, d);
         }
         return null;
     }

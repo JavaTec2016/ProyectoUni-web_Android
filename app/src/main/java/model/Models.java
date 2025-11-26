@@ -4,6 +4,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import org.json.JSONObject;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -26,6 +28,9 @@ public class Models extends HashMap<String, Model> {
     public static Models getModels(){
         return models;
     }
+    public Model fromClass(Class<?> clase){
+        return get(clase.getSimpleName().toLowerCase());
+    }
     public LinkedHashMap<String, DataRow> getRulesOf(String nombre){
         return get(nombre).rules;
     }
@@ -44,7 +49,7 @@ public class Models extends HashMap<String, Model> {
     }
 
     public void addPrototype(Model m){
-        putIfAbsent(m.getClass().getSimpleName(), m);
+        putIfAbsent(m.getName(), m);
         m.setRules();
     }
     public Model fillPrototype(String nombre, LinkedHashMap<String, Object> datos){
@@ -93,4 +98,36 @@ public class Models extends HashMap<String, Model> {
         }
         return null;
     }
+    /**
+     * Crea una instancia vacia del modelo y luego la llena con los datos dados
+     * @param nombre nombre del modelo a crear
+     * @param json JSONObject con los datos del modelo
+     * @return nuevo modelo
+     */
+    public Model newInstance(String nombre, JSONObject json){
+        Constructor<? extends Model>[] cons = (Constructor<? extends Model>[]) get(nombre).getClass().getDeclaredConstructors();
+        Constructor<? extends Model> con = null;
+        for (int i = 0; i < cons.length; i++) {
+            if(cons[i].getParameterCount() == 0) {
+                con = cons[i];
+                break;
+            }
+        }
+        if(con == null) {
+            return null;
+        }
+        try {
+            Model m = con.newInstance();
+            m.fill(json);
+            return m;
+        } catch (IllegalAccessException e) {
+            Log.i("INSTANCER", "Constructor inaccesible para: '"+nombre+"'", new RuntimeException(e));
+        } catch (InstantiationException e) {
+            Log.i("INSTANCER", "La clase '"+nombre+"' no es instanciable", new RuntimeException(e));
+        } catch (InvocationTargetException e) {
+            Log.i("INSTANCER", "Error al instanciar: '"+nombre+"'", new RuntimeException(e));
+        }
+        return null;
+    }
+
 }

@@ -94,9 +94,9 @@ public class JSONParser {
             if(method.equals("GET")) sendJSONGET(targetUrl, datos);
             else sendJSON(targetUrl, method, json);
         } catch (MalformedURLException e) {
-            Log.i("REQUEST->", "ERROR: URL malformada");
+            Log.i("REQUEST->", "ERROR: URL malformada: ", e);
         } catch (IOException e) {
-            Log.i("REQUEST->", "ERROR: error de comunicacion", new IOException(e));
+            Log.i("REQUEST->", "ERROR: error de comunicacion", e);
         }
         //----------RESPUESTA (resposne)
 
@@ -137,5 +137,22 @@ public class JSONParser {
          */
         datos.put("tabla", tabla);
         return request(targetUrl, method, datos);
+    }
+
+    /**
+     * Convierte un JSONObject simple a LinkedHashMap, no contempla arreglos
+     * @param obj json a convertir
+     * @return hashmap con valores en orden de insercion
+     */
+    public LinkedHashMap<String, Object> toHashMap(JSONObject obj){
+        LinkedHashMap<String, Object> vlas = new LinkedHashMap<>();
+        obj.keys().forEachRemaining(key ->{
+            try {
+                vlas.put(key, obj.get(key));
+            } catch (JSONException e) {
+                Log.i("JSONParser", "Error al convertir el JSON: ", e);
+            }
+        });
+        return vlas;
     }
 }

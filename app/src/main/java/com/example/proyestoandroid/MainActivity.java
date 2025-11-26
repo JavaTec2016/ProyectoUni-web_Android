@@ -11,6 +11,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.proyestoandroid.abcc.AbccActivity;
+import com.example.proyestoandroid.abcc.AbccClase;
+
+import model.ModelLoader;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,10 +27,12 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        ModelLoader.loadAll();
     }
 
     public void irABCC(View v){
-        Intent i = new Intent(this, AbccActivity.class);
+        Intent i = new Intent(this, AbccClase.class);
         startActivity(i);
     }
 }

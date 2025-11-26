@@ -3,6 +3,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,12 +31,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
 
     @Override
     public void onBindViewHolder(@NonNull CustomViewHolder holder, int position) {
-        Model model = (Model)localDataset.get(position);
-        Model proto = model.getProto();
+        Model model = localDataset.get(position);
         Log.i("CUSTOMHOLDER", ""+position);
-        holder.getTextView().setText(model.read(proto.proto_getCampoPrimario()).toString());
+        holder.bindModel(model);
     }
-
     @Override
     public int getItemCount() {
         return localDataset.size();
@@ -43,13 +42,39 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
 
     public static class CustomViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
-
+        public Button btnEliminar;
+        public Button btnEditar;
+        public Button btnDetalles;
+        public Model m;
         public CustomViewHolder(View v){
             super(v);
-            textView = (TextView) v.findViewById(R.id.textview_result);
+            textView = v.findViewById(R.id.textview_result);
+            btnEliminar = v.findViewById(R.id.textview_result_btnEliminar);
+            btnEditar = v.findViewById(R.id.textview_result_btnEditar);
+            btnDetalles = v.findViewById(R.id.textview_result_btnDetalles);
         }
         public TextView getTextView() {
             return textView;
+        }
+        public void bindModel(Model m){
+            this.m = m;
+            getTextView().setText(m.toString());
+            Model proto = m.getProto();
+            String primaria = m.read(proto.proto_getCampoPrimario()).toString();
+
+            ///bindear botones a callbacks
+            btnDetalles.setOnClickListener(v -> {
+                Log.i("REGISTRO GG", "detalles de " +
+                        m.getName() + ": " + primaria);
+            });
+            btnEditar.setOnClickListener(v -> {
+                Log.i("REGISTRO GG", "edicion de " +
+                        m.getName() + ": " + primaria);
+            });
+            btnEliminar.setOnClickListener(v -> {
+                Log.i("REGISTRO GG", "Baja de " +
+                        m.getName() + ": " + primaria);
+            });
         }
     }
 }
