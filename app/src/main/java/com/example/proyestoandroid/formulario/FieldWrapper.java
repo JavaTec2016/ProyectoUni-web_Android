@@ -25,10 +25,13 @@ import com.example.proyestoandroid.R;
 import java.util.LinkedHashMap;
 
 public class FieldWrapper {
+    public static final int SIZE_AUTO = -5;
     private int width = 0;
     private int height = 0;
     public String type;
     public String id;
+    //agregar por separao
+    public TextView label;
     public LinkedHashMap<String, View> ui = new LinkedHashMap<>();
 
     public ConstraintLayout container;
@@ -42,7 +45,7 @@ public class FieldWrapper {
      * @param attach si es true, se agrega el container al parent automaticamente
      */
     public FieldWrapper(String type, ViewGroup parent, boolean attach){
-        this(type, parent, attach, 400, 20);
+        this(type, parent, attach, 800, SIZE_AUTO);
     }
     public FieldWrapper(String type, ViewGroup parent, boolean attach, int w, int h){
         this.type = type;
@@ -53,11 +56,25 @@ public class FieldWrapper {
         setDimensions(w, h);
         requestLayout();
     }
+    public void setLabelText(String txt){
+        label.setText(txt);
+    }
     private LinearLayout.LayoutParams makeLinearParams(){
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
+        return  params;
+    }
+    private LinearLayout.LayoutParams makeLinearParams(int w, int h){
+        int wi=w, he=h;
+        if(w==SIZE_AUTO) wi = ViewGroup.LayoutParams.MATCH_PARENT;
+        if(h==SIZE_AUTO) he = ViewGroup.LayoutParams.WRAP_CONTENT;
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                wi,
+                he
+        );
+        Log.i("PARAMS", "params como: " + wi + " , " + he);
         return  params;
     }
     public void requestLayout(){
@@ -68,22 +85,20 @@ public class FieldWrapper {
         height = h;
         if(ui.size() == 1){
             View v = ui.values().iterator().next();
-            v.setMinimumHeight(w);
-            v.setMinimumHeight(h);
-            v.setLayoutParams(makeLinearParams());
 
-        }else if(type.equalsIgnoreCase("spinner")){
-            ui.get("integer").setMinimumWidth((int) (w*0.75));
-            ui.get("decimal").setMinimumWidth((int) (w*0.25)-20);
-            ui.get("dot").setMinimumWidth(20);
+            v.setLayoutParams(makeLinearParams(w, h));
 
-            ui.get("integer").setMinimumHeight(w);
-            ui.get("decimal").setMinimumHeight(h);
-            ui.get("dot").setMinimumHeight(h);
+        }else if(type.equalsIgnoreCase("decimal")){
 
-            ui.get("integer").setLayoutParams(makeLinearParams());
-            ui.get("decimal").setLayoutParams(makeLinearParams());
-            ui.get("dot").setLayoutParams(makeLinearParams());
+            ui.get("integer").setLayoutParams(makeLinearParams((int) (w*0.75), h));
+            ui.get("decimal").setLayoutParams(makeLinearParams((int) (w*0.25)-22, h));
+            ui.get("dot").setLayoutParams(makeLinearParams(20, h));
+
+        }else if(type.equalsIgnoreCase("date")){
+
+            ui.get("date_y").setLayoutParams(makeLinearParams((int) (w*0.4), h));
+            ui.get("date_m").setLayoutParams(makeLinearParams((int) (w*0.4), h));
+            ui.get("date_d").setLayoutParams(makeLinearParams((int) (w*0.2), h));
         }
     }
     public HorizontalScrollView getView(){
@@ -131,10 +146,36 @@ public class FieldWrapper {
         });
     }
     private void addEditDate(String id){
-        EditText et = new EditText(getCtx());
-        et.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
-        getLayout().addView(et);
-        ui.put(id, et);
+        EditText y = new EditText(getCtx());
+        Spinner m = makeSpinner(new FieldAdapterItem[]{
+                new FieldAdapterItem("", "Mes"),
+                new FieldAdapterItem("1", "1 - Enero"),
+                new FieldAdapterItem("2", "2 - Febrero"),
+                new FieldAdapterItem("3", "3 - Marzo"),
+                new FieldAdapterItem("4", "4 - Abril"),
+                new FieldAdapterItem("5", "5 - Mayo"),
+                new FieldAdapterItem("6", "6 - Junio"),
+                new FieldAdapterItem("7", "7 - Julio"),
+                new FieldAdapterItem("8", "8 - Agosto"),
+                new FieldAdapterItem("9", "9 - Septiembre"),
+                new FieldAdapterItem("10", "10- Octubre"),
+                new FieldAdapterItem("11", "11- Noviembre"),
+                new FieldAdapterItem("12", "12- Diciembre"),
+        });
+        EditText d = new EditText(getCtx());
+
+        y.setInputType(InputType.TYPE_CLASS_NUMBER);
+        d.setInputType(InputType.TYPE_CLASS_NUMBER);
+        setMaxLength(y, 4);
+        setMaxLength(d, 2);
+
+        getLayout().addView(y);
+        getLayout().addView(m);
+        getLayout().addView(d);
+
+        ui.put(id+"_y", y);
+        ui.put(id+"_m", m);
+        ui.put(id+"_d", d);
     }
     private void addEditPhone(String id){
         EditText et = new EditText(getCtx());
@@ -169,25 +210,34 @@ public class FieldWrapper {
         getLayout().addView(dc);
     }
     private void addDropdown(String id, FieldAdapterItem[] options){
+        Spinner et = makeSpinner(options);
+        getLayout().addView(et);
+        ui.put(id, et);
+    }
+    private Spinner makeSpinner(FieldAdapterItem[] options){
         if(options == null){
             options = new FieldAdapterItem[]{new FieldAdapterItem("", "Seleccionar...")};
         }
         ArrayAdapter<FieldAdapterItem> adapter = new ArrayAdapter<>(getCtx(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, options);
         Spinner et = new Spinner(getCtx());
         et.setAdapter(adapter);
-        getLayout().addView(et);
-        ui.put(id, et);
+        return et;
     }
     public void setTextHint(String hint){
         switch (type.toLowerCase()){
             case "text":
             case "number":
-            case "date":
             case "phone":
             case "email":
                 ((EditText)ui.get(type.toLowerCase())).setHint(hint); break;
             case "decimal":
-                ((EditText)ui.get("integer")).setHint(hint); break;
+                ((EditText)ui.get("integer")).setHint(hint);
+                ((EditText)ui.get("decimal")).setHint("00");
+                break;
+            case "date":
+                ((EditText)ui.get("date_y")).setHint("Año (Ej. 2002)");
+                ((EditText)ui.get("date_d")).setHint("dia (Ej. 31)");
+                break;
         }
     }
     protected String getValueAsEditText(View v){
@@ -223,7 +273,6 @@ public class FieldWrapper {
     public String getValue(){
         switch (type.toLowerCase()){
             case "number":
-            case "date":
             case "phone":
             case "text": return getValueAsEditText(type.toLowerCase());
             case "decimal":
@@ -232,6 +281,13 @@ public class FieldWrapper {
                 return integer + "." + decimal;
             case "spinner":
                 return getValueAsSpinner("spinner");
+            case "date":
+                String[] data = {
+                        getValueAsEditText("date_y"),
+                        getValueAsSpinner("date_m"),
+                        getValueAsEditText("date_d")
+                };
+                return String.join("-", data);
         }
         return null;
     }
@@ -245,7 +301,6 @@ public class FieldWrapper {
         switch (type.toLowerCase()){
             case "text":
             case "number":
-            case "date":
             case "phone": setValueAsEditText(type.toLowerCase(), str); break;
             case "decimal":
                 String[] number = str.split("\\.");
@@ -255,6 +310,12 @@ public class FieldWrapper {
                 setValueAsEditText("integer", number[0]);
                 break;
             case "spinner": setValueAsSpinner("spinner", str); break;
+            case "date":
+                String[] ymd = str.split("-");
+                if(ymd.length != 3) return;
+                setValueAsEditText("date_y", ymd[0]);
+                setValueAsSpinner("date_m", ymd[1]);
+                setValueAsEditText("date_d", ymd[2]);
         }
     }
 
@@ -286,6 +347,7 @@ public class FieldWrapper {
         });
     }
     private void buildFields(String type){
+        label = new TextView(getCtx());
         switch (type.toLowerCase()){
             case "text": addEditText("text"); break;
             case "number": addEditNumber("number"); break;
@@ -305,7 +367,6 @@ public class FieldWrapper {
         switch (type.toLowerCase()){
             case "text":
             case "number":
-            case "date":
             case "email":
             case "phone": addTextChangedListener(type.toLowerCase()); break;
             case "decimal":
@@ -313,6 +374,11 @@ public class FieldWrapper {
                 addTextChangedListener("decimal");
                 break;
             case "spinner": addSelectionChangeListener("spinner"); break;
+            case "date":
+                addTextChangedListener("date_y");
+                addSelectionChangeListener("date_m");
+                addTextChangedListener("date_d");
+                break;
         }
     }
     /**

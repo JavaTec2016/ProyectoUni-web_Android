@@ -37,6 +37,11 @@ public class AbccActivity extends AppCompatActivity {
         });
         formContainer = findViewById(R.id.formScrollView);
         FormWrapper form = new FormWrapper(formContainer);
-        form.makeNewField("anio_grad", "number", "Año de graduación");
+        form.makeNewField("anio_grad", "number", "Año de graduación", "Label tests");
+        form.makeNewField("monto", "decimal", "Monto Maximo", "Monto 1");
+        form.makeNewField("monto1", "decimal", "Monto Maximo", "Monto 1");
+        form.makeNewField("monto2", "decimal", "Monto Maximo", "Monto 1");
+        form.makeNewField("monto3", "decimal", "Monto Maximo", "Monto 1");
+        form.makeNewField("monto4", "date", "Fecha", "Dia de muerto");
     }
 }

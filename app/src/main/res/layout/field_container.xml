@@ -6,7 +6,7 @@
 
     <HorizontalScrollView
         android:id="@+id/fieldContainer"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -14,10 +14,8 @@
 
         <LinearLayout
             android:id="@+id/fieldLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal" >
-
-        </LinearLayout>
+            android:orientation="horizontal" />
     </HorizontalScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

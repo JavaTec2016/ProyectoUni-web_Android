@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.example.proyestoandroid.R;
 
@@ -35,9 +36,19 @@ public class FormWrapper {
         //getLayout().requestLayout();
         Log.i("DEBUGEO", "items " + getLayout().getChildCount());
     }
+    public void addLabel(TextView lbl){
+        getLayout().addView(lbl);
+    }
     public void makeNewField(String id, String type, String hint){
         FieldWrapper f = new FieldWrapper(type, getLayout(), false);
         f.setTextHint(hint);
+        addField(id, f);
+    }
+    public void makeNewField(String id, String type, String hint, String label){
+        FieldWrapper f = new FieldWrapper(type, getLayout(), false);
+        f.setTextHint(hint);
+        f.setLabelText(label);
+        addLabel(f.label);
         addField(id, f);
     }
     public void onFieldsChange(FieldWrapper.FieldListener listener){
