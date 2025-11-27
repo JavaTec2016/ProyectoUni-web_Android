@@ -87,7 +87,8 @@ public class FormWrapper {
      */
     public void setFormData(LinkedHashMap<String, Object> datos){
         datos.forEach((id, value)->{
-            Objects.requireNonNull(ui.get(id)).setValue(value);
+            if(!ui.containsKey(id)) return;
+            ui.get(id).setValue(value);
         });
     }
     public void clearForm(){

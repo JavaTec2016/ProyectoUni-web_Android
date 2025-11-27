@@ -1,6 +1,7 @@
 package com.example.proyestoandroid.formulario;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -50,6 +51,21 @@ public class FieldWrapper {
      */
     public FieldWrapper(String type, ViewGroup parent, boolean attach){
         this(type, parent, attach, 800, SIZE_AUTO);
+    }
+    public FieldWrapper(String type, ViewGroup parent, boolean attach, boolean readOnly){
+        this(type, parent, attach, 800, SIZE_AUTO);
+        setReadOnly(readOnly);
+    }
+    public void setReadOnly(boolean state){
+        ui.forEach((id, view)->{
+            view.setFocusable(!state);
+            view.setFocusableInTouchMode(!state);
+            view.setEnabled(!state);
+            if(!state) view.setBackgroundColor(Color.TRANSPARENT);
+            if(view instanceof EditText){
+                ((EditText) view).setCursorVisible(!state);
+            }
+        });
     }
     public FieldWrapper(String type, ViewGroup parent, boolean attach, int w, int h){
         this.type = type;

@@ -155,4 +155,19 @@ public class JSONParser {
         });
         return vlas;
     }
+    public static LinkedHashMap<String, Object> decode(String json) throws JSONException {
+        JSONObject obj = new JSONObject(json);
+        LinkedHashMap<String, Object> vlas = new LinkedHashMap<>();
+        obj.keys().forEachRemaining(key ->{
+            try {
+                vlas.put(key, obj.get(key));
+            } catch (JSONException e) {
+                Log.i("JSONParser", "Error al convertir el JSON: ", e);
+            }
+        });
+        return vlas;
+    }
+    public static String encode(LinkedHashMap<?,?> datos) throws JSONException {
+        return new JSONObject(datos).toString();
+    }
 }

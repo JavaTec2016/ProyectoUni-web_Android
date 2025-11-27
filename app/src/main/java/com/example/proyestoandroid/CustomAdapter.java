@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.proyestoandroid.abcc.AbccActivity;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 
 import model.Model;
@@ -47,14 +49,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
         public TextView textView;
         public Button btnEliminar;
         public Button btnEditar;
-        public Button btnDetalles;
         public Model m;
         public CustomViewHolder(View v){
             super(v);
             textView = v.findViewById(R.id.textview_result);
             btnEliminar = v.findViewById(R.id.textview_result_btnEliminar);
             btnEditar = v.findViewById(R.id.textview_result_btnEditar);
-            btnDetalles = v.findViewById(R.id.textview_result_btnDetalles);
         }
         public TextView getTextView() {
             return textView;
@@ -66,11 +66,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
             String primaria = m.read(proto.proto_getCampoPrimario()).toString();
 
             ///bindear botones a callbacks
-            btnDetalles.setOnClickListener(v -> {
-                source.detallesIntent(m);
-            });
             btnEditar.setOnClickListener(v -> {
-                source.editarIntent(primaria, m);
+                try {
+                    source.editarIntent(primaria, m);
+                } catch (JSONException e) {
+                    Log.i("REGISTRO EDIT ", "Error JSON", e);
+                }
             });
             btnEliminar.setOnClickListener(v -> {
                 source.eliminar(primaria);

@@ -24,10 +24,13 @@ import com.example.proyestoandroid.formulario.FieldWrapper;
 import com.example.proyestoandroid.formulario.FormWrapper;
 import com.example.proyestoandroid.formulario.MensajesError;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import controller.ABCC;
+import controller.JSONParser;
 import model.Model;
 
 public class AbccActivity extends AppCompatActivity {
@@ -40,7 +43,6 @@ public class AbccActivity extends AppCompatActivity {
     MensajesError errores = null;
     protected boolean enConsulta = false;
     protected String tabla = null;
-    protected Model seleccion = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,13 +162,12 @@ public class AbccActivity extends AppCompatActivity {
         }).start();
 
     }
-    public void editarIntent(String id, Model selectedModel){
-        Intent i = new Intent(this, null);
+    public void editarIntent(String id, Model selectedModel) throws JSONException {
+        Intent i = new Intent(this, CambioClase.class);
         Log.i("REGISTRO GG2", "Edicion de" + id);
         i.putExtra("OLD_id", id);
-        selectedModel.getDataMap().forEach((key, val)->{
-            i.putExtra(key, String.valueOf(val));
-        });
+        i.putExtra("modelData", JSONParser.encode(selectedModel.getDataMap()));
+        startActivity(i);
     }
     public void detallesIntent(Model model){
         Intent i = new Intent(this, null);
