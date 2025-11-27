@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void irABCC(View v){
-        Intent i = new Intent(this, AbccClase.class);
+        Intent i = new Intent(this, MenuActivity.class);
         startActivity(i);
     }
 

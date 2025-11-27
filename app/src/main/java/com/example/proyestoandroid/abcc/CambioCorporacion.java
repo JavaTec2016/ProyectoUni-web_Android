@@ -19,10 +19,13 @@ public class CambioCorporacion extends CambioActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        form.makeNewField(Clase.ID, "number", "", "ID").setReadOnly(true);
+        tabla = Corporacion.class.getSimpleName().toLowerCase();
+        form.makeNewField(Corporacion.ID, "number", "", "ID").setReadOnly(true);
         form.makeNewField(Corporacion.NOMBRE, "text", "Nombre", "Nombre de la corporación");
         form.makeNewField(Corporacion.DIRECCION, "text", "Direccion", "Dirección");
         form.makeNewField(Corporacion.TELEFONO, "phone", "Numero de telefono", "Teléfono");
+
+        autoFill();
     }
     @Override
     public void setMensajesError() {
