@@ -4,6 +4,8 @@ package com.example.proyestoandroid.formulario;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.HashMap;
+
 public class FieldAdapterItem {
     String key;
     String value;
@@ -40,5 +42,15 @@ public class FieldAdapterItem {
         if(!(obj instanceof FieldAdapterItem)) return false;
         FieldAdapterItem item = (FieldAdapterItem) obj;
         return (item.getKey().equals(key));
+    }
+
+    public static FieldAdapterItem[] fromHashMap(HashMap<?, ?> map){
+        FieldAdapterItem[] out = new FieldAdapterItem[map.size()];
+        int[] i = {0};
+        map.forEach((id, val)->{
+            out[i[0]] = new FieldAdapterItem(id.toString(), val.toString());
+            i[0]++;
+        });
+        return out;
     }
 }

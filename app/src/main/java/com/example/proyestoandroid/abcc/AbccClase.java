@@ -13,6 +13,7 @@ public class AbccClase extends AbccActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Clase prototype = (Clase) Models.getModels().fromClass(Clase.class);
+        cambioTarget = CambioClase.class;
 
         tabla = prototype.getName();
         form.makeNewField(Clase.ANIO_GRADUACION, "number", "Ej. 2020", "Año de graduación");
@@ -23,7 +24,7 @@ public class AbccClase extends AbccActivity {
 
     @Override
     public void setMensajesError() {
-        errores.presetSerial(new Object[]{
+        setMensajesFor(Clase.ANIO_GRADUACION, new Object[]{
                 MensajesError.WRONG_TYPE, "Debe ser un año",
                 MensajesError.REGEX_FAIL, "Debe ser un año válido",
         });

@@ -29,7 +29,7 @@ public class CambioClase extends CambioActivity {
     }
     @Override
     public void setMensajesError() {
-        errores.presetSerial(new Object[]{
+        setMensajesFor(Clase.ANIO_GRADUACION, new Object[]{
                 MensajesError.WRONG_TYPE, "Debe ser un año",
                 MensajesError.REGEX_FAIL, "Debe ser un año válido",
         });

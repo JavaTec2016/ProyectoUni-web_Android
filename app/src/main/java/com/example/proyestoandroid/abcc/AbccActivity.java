@@ -27,6 +27,7 @@ import com.example.proyestoandroid.formulario.MensajesError;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import controller.ABCC;
@@ -41,8 +42,10 @@ public class AbccActivity extends AppCompatActivity {
     ArrayList<Model> registros;
     FormWrapper form;
     MensajesError errores = null;
+    HashMap<String, MensajesError> erroresCampos = new HashMap<>();
     protected boolean enConsulta = false;
     protected String tabla = null;
+    protected Class<? extends CambioActivity> cambioTarget;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,8 +93,11 @@ public class AbccActivity extends AppCompatActivity {
             int numCodigo = Integer.parseInt(String.valueOf(codigo));
             if(numCodigo == MensajesError.OK) { form.clearLabelError(id); }
             else if(numCodigo == MensajesError.NULL_DATA){form.markLabelError(id, "*Campo requerido");}
-            else form.markLabelError(id, errores.getMensaje(numCodigo));
+            else form.markLabelError(id, getMensajeFor(id, numCodigo));
         });
+    }
+    public String getMensajeFor(String id, int codigo){
+        return erroresCampos.get(id).getMensaje(codigo);
     }
     public void showAgregarSuccess(){
         showToast("Registro agregado", Toast.LENGTH_SHORT);
@@ -129,6 +135,9 @@ public class AbccActivity extends AppCompatActivity {
             enConsulta = false;
         }).start();
     }
+    public void setMensajesFor(String id, Object[] seriales){
+        erroresCampos.put(id, new MensajesError(seriales));
+    }
     public void limpiarForm(View v){
         form.clearForm();
     }
@@ -164,7 +173,7 @@ public class AbccActivity extends AppCompatActivity {
 
     }
     public void editarIntent(String id, Model selectedModel) throws JSONException {
-        Intent i = new Intent(this, CambioClase.class);
+        Intent i = new Intent(this, cambioTarget);
         Log.i("REGISTRO GG2", "Edicion de" + id);
         i.putExtra("OLD_id", id);
         i.putExtra("modelData", JSONParser.encode(selectedModel.getDataMap()));

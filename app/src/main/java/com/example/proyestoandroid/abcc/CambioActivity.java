@@ -19,6 +19,7 @@ import com.example.proyestoandroid.formulario.MensajesError;
 
 import org.json.JSONException;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import controller.ABCC;
@@ -32,6 +33,8 @@ public class CambioActivity extends AppCompatActivity {
     protected String tabla = null;
     protected String oldId = null;
     protected LinkedHashMap originalData = null;
+
+    HashMap<String, MensajesError> erroresCampos = new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,16 +86,22 @@ public class CambioActivity extends AppCompatActivity {
     }
     public void displayValidacion(LinkedHashMap<String, Object> validacion){
         if(validacion==null) {
-            showEditarrSuccess();
             form.clearAllLabelErrors();
+            showEditarrSuccess();
             return;
         }
         validacion.forEach((id, codigo)->{
             int numCodigo = Integer.parseInt(String.valueOf(codigo));
             if(numCodigo == MensajesError.OK) { form.clearLabelError(id); }
             else if(numCodigo == MensajesError.NULL_DATA){form.markLabelError(id, "*Campo requerido");}
-            else form.markLabelError(id, errores.getMensaje(numCodigo));
+            else form.markLabelError(id, getMensajeFor(id, numCodigo));
         });
+    }
+    public String getMensajeFor(String id, int codigo){
+        return erroresCampos.get(id).getMensaje(codigo);
+    }
+    public void setMensajesFor(String id, Object[] seriales){
+        erroresCampos.put(id, new MensajesError(seriales));
     }
     public void showToast(String text, int length){
         CambioActivity hook = this;

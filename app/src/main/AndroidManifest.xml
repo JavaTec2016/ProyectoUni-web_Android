@@ -17,6 +17,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".MenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".abcc.CambioCorporacion"
+            android:exported="false" />
+        <activity
+            android:name=".abcc.AbccCorporacion"
+            android:exported="false" />
+        <activity
+            android:name=".abcc.AbccEvento"
+            android:exported="false" />
+        <activity
             android:name=".abcc.CambioClase"
             android:exported="false" />
         <activity
