@@ -84,6 +84,7 @@ public class CambioActivity extends AppCompatActivity {
     public void displayValidacion(LinkedHashMap<String, Object> validacion){
         if(validacion==null) {
             showEditarrSuccess();
+            form.clearAllLabelErrors();
             return;
         }
         validacion.forEach((id, codigo)->{

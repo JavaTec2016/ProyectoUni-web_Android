@@ -69,6 +69,11 @@ public class FormWrapper {
         String err = fld.labelText;
         txt.setText(err);
     }
+    public void clearAllLabelErrors(){
+        ui.forEach((id, fld)->{
+            clearLabelError(id);
+        });
+    }
     /**
      * Extrae los datos de todos los campos registrados en el formulario a un mapa
      * @return
@@ -93,6 +98,7 @@ public class FormWrapper {
     }
     public void clearForm(){
         ui.forEach((id, field)->{
+            if(field.getReadOnly()) return;
             field.setValue("");
         });
     }

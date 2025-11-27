@@ -42,7 +42,7 @@ public class FieldWrapper {
     public ConstraintLayout container;
 
     private FieldListener generalChangeListener;
-
+    private boolean readonly = false;
     /**
      * Infla un layout de field container con el parent especificado, pero sin agregarle nada
      * @param type tipo de input
@@ -57,6 +57,7 @@ public class FieldWrapper {
         setReadOnly(readOnly);
     }
     public void setReadOnly(boolean state){
+        this.readonly = state;
         ui.forEach((id, view)->{
             view.setFocusable(!state);
             view.setFocusableInTouchMode(!state);
@@ -67,6 +68,7 @@ public class FieldWrapper {
             }
         });
     }
+    public boolean getReadOnly(){return readonly;}
     public FieldWrapper(String type, ViewGroup parent, boolean attach, int w, int h){
         this.type = type;
         container = (ConstraintLayout) LayoutInflater.from(parent.getContext())
